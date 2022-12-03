@@ -4,6 +4,8 @@ typedef struct TextAnimator {
 	double part;
 	int img_width;
 	TTF_Font* fn;
+	SDL_Color color;
+	const char* str;
 } TextAnimator;
 
 void textBoxCleanup(void* vp_go, void* vp_game) {
@@ -12,7 +14,7 @@ void textBoxCleanup(void* vp_go, void* vp_game) {
 	TTF_CloseFont( ((TextAnimator*)go->extension)->fn );
 }
 
-void textBoxInitialize(void* vp_go, void* vp_game) { // TODO
+void textBoxInitialize(void* vp_go, void* vp_game) {
 	GameObject* go = (GameObject*)vp_go;
 	Game* game = (Game*)vp_game;
 
@@ -28,6 +30,9 @@ void textBoxInitialize(void* vp_go, void* vp_game) { // TODO
 
 
 	setGameError(game, SDL_ERR);
+
+	textanim->color = (SDL_Color){255,255,255}; // compound literals wtf
+	textanim->str = NULL;
 
 	textanim->fn = TTF_OpenFont(GAMEFON, GAMEFONSZ);
 	if (!textanim->fn) return;
@@ -46,7 +51,7 @@ void textBoxUpdate(void* vp_go, void* vp_game) {
 		return;
 	}
 
-	go->rect.w = textanim->part;
+	go->partrect.w = textanim->part;
 
 	textanim->part += 2;
 }
@@ -58,6 +63,29 @@ void textBoxSetSize(void* vp_go, int w, int h) {
 	go->rect.h = h;
 }
 
+void textBoxReRender(void* vp_go, void* vp_game) {
+	GameObject* go = (GameObject*)vp_go;
+	Game* game = (Game*)vp_game;
+	TextAnimator* textanim = (TextAnimator*)go->extension;
+
+	setGameError(game, SDL_ERR);
+
+	SDL_Surface* msg = TTF_RenderText_Solid(textanim->fn, textanim->str, textanim->color);
+	if (!msg) return;
+
+	go->tex = SDL_CreateTextureFromSurface(game->renderer, msg);
+	if (!go->tex) return;
+
+	setGameError(game, ALLGOOD);
+}
+
+void textBoxSetColor(void* vp_go, SDL_Color color) {
+	GameObject* go = (GameObject*)vp_go;
+	TextAnimator* textanim = (TextAnimator*)go->extension;
+
+	textanim->color = color;
+}
+
 void textBoxSetText(void* vp_go, void* vp_game, const char* str) {
 	GameObject* go = (GameObject*)vp_go;
 	Game* game = (Game*)vp_game;
@@ -65,11 +93,11 @@ void textBoxSetText(void* vp_go, void* vp_game, const char* str) {
 
 	textanim->part = 10;
 
-	SDL_Color white = {255,255,255};
+	textanim->str = str;
 
 	setGameError(game, SDL_ERR);
 
-	SDL_Surface* msg = TTF_RenderText_Solid(textanim->fn, str, white);
+	SDL_Surface* msg = TTF_RenderText_Solid(textanim->fn, str, textanim->color);
 	if (!msg) return;
 
 	go->tex = SDL_CreateTextureFromSurface(game->renderer, msg);
@@ -79,5 +107,9 @@ void textBoxSetText(void* vp_go, void* vp_game, const char* str) {
 
 	SDL_QueryTexture(go->tex, NULL, NULL, &go->rect.w, &go->rect.h);
 	textanim->img_width = go->rect.w;
+	go->partrect.h = go->rect.h;
+
+	go->partrect.x = 0;
+	go->partrect.y = 0;
 }
 

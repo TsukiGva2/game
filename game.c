@@ -4,6 +4,7 @@
 
 #include "textbox.h"
 #include "uwugirl.h"
+#include "button.h"
 
 #include <SDL2/SDL_ttf.h>
 
@@ -40,7 +41,7 @@ int main(void) {
 	GameObject* main_tb; // main textbox
 
 	if (!(demon_girl = makeAndAdd(
-					&game, 0, 0, &uwuGirlInitialize, &uwuGirlUpdate, TYPE_SPRITE, "resources/she.png"))) {
+					&game, 0, 0, &uwuGirlInitialize, &uwuGirlUpdate, TYPE_SPRITE, NULL))) {
 		CHECK_ERR(&game);
 	}
 
@@ -54,6 +55,21 @@ int main(void) {
 
 	textBoxSetText(main_tb, &game, "hello! i am satan.");
 	CHECK_ERR(&game);
+
+	GameObject* button_tb;
+	GameObject* button;
+	if (!(button_tb = makeAndAdd(
+					&game, (demon_girl->rect.x + demon_girl->partrect.w), (((WINH-100)/2)+30),
+					&textBoxInitialize, &textBoxUpdate, TYPE_TEXTBOX, NULL))) {
+		CHECK_ERR(&game);
+	}
+	if (!(button = makeAndAdd(
+					&game, 0, 0,
+					&buttonInitialize, &buttonUpdate, TYPE_BUTTON, NULL))) {
+		CHECK_ERR(&game);
+	}
+	textBoxSetText(button_tb, &game, "button");
+	buttonAttachTextBox(button, button_tb);
 
 	game.close_game = 0;
 	while (!game.close_game) {

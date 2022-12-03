@@ -2,15 +2,7 @@
 #include "gameobjs.h"
 #include "game_state.h"
 
-void freeGameObjects(GameObject* go) {
-	if (!go) return;
-
-	if (go->type == TYPE_HEAD) {
-		freeGameObjects(go->next);
-		free(go);
-		return;
-	}
-
+GameObject* freeGameObject(GameObject* go) {
 	GameObject* next = go->next;
 
 	if (go->tex) SDL_DestroyTexture(go->tex);
@@ -20,6 +12,20 @@ void freeGameObjects(GameObject* go) {
 	}
 
 	free(go);
+
+	return next;
+}
+
+void freeGameObjects(GameObject* go) {
+	if (!go) return;
+
+	if (go->type == TYPE_HEAD) {
+		freeGameObjects(go->next);
+		free(go);
+		return;
+	}
+
+	GameObject* next = freeGameObject(go);
 
 	freeGameObjects(next);
 }
@@ -51,6 +57,7 @@ GameObject* makeGameObject(Game* game,
 	go->extension = NULL;
 	go->cleanup = NULL;
 	go->tex = NULL;
+	go->partrect.w = INT_MAX;
 
 	if (!image) goto skipimg;
 
@@ -78,8 +85,9 @@ skipimg:
 	go->type = type;
 
 	go->next = NULL;
+	go->prev = NULL;
 
-	init(go, game);
+	if (init) init(go, game);
 
 	return go;
 }
@@ -92,7 +100,13 @@ void drawGameObjects(GameObject* go, Game* game) {
 		return;
 	}
 
-	if (go->tex) SDL_RenderCopy(game->renderer, go->tex, NULL, &(go->rect));
+	if (go->tex) {
+		if (go->partrect.w == INT_MAX) { // entire img
+			SDL_RenderCopy(game->renderer, go->tex, NULL, &(go->rect));
+		} else {
+			SDL_RenderCopy(game->renderer, go->tex, &(go->partrect), &(go->rect));
+		}
+	}
 	//if (go->type == TYPE_TEXTBOX) SDL_RenderDrawRect(game->renderer, &(go->rect));
 
 	drawGameObjects(go->next, game);

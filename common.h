@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 //#include <math.h>
 
 #include <SDL2/SDL.h>
@@ -40,6 +41,7 @@ typedef enum {
 typedef struct GameObject {
 	SDL_Texture* tex;
 	SDL_Rect rect;
+	SDL_Rect partrect;
 	int initialx;
 	int initialy;
 	ID_UINT id;
@@ -48,13 +50,15 @@ typedef struct GameObject {
 	GameFn cleanup;
 	void* extension;
 	struct GameObject* next;
+	struct GameObject* prev;
 } GameObject;
 
 typedef enum {
 	ALLGOOD,
 	ALLOC_ERR,
-	MAXOBJS_ERR,
-	SDL_ERR
+	SDL_ERR,
+	NOID_ERR,
+	MAXOBJS_ERR
 } GameError;
 
 typedef struct {

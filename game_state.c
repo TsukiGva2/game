@@ -13,7 +13,10 @@ GameError getGameError(Game* game) {
 
 GameObject* addGameObject(Game* game, GameObject* go) {
 	GameObject* it = game->gObjs_head;
+
 	for (int i = 0; (it->next) && i < MAX_OBJS; i++) {
+		if (!it->next) go->prev = it;
+
 		it = it->next;
 	}
 
@@ -25,6 +28,28 @@ GameObject* addGameObject(Game* game, GameObject* go) {
 	it->next = go;
 
 	return go;
+}
+
+void delGameObject(Game* game, int id) {
+	GameObject* it = game->gObjs_head;
+	GameObject* prev;
+
+	for (int i = 0; (it->next) && it->id != id; i++) {
+		if (it->id == (id - 1)) {
+			prev = it;
+		}
+		it = it->next;
+	}
+
+	if (!it) {
+		setGameError(game, NOID_ERR);
+		return;
+	}
+
+	GameObject* next = freeGameObject(it);
+	
+	if (next) next->prev = prev;
+	prev->next = next;
 }
 
 void gameCleanup(Game* game) {
@@ -43,10 +68,11 @@ void initializeGame(Game* game) {
 		return;
 	}
 
-	game->gObjs_head->next = NULL;
+	game->gObjs_head->next   = NULL;
 	game->gObjs_head->update = NULL; // ALWAYS initialize please (this line not being here caused like 5 segfaults ffs)
-	game->gObjs_head->type = TYPE_HEAD;
-	game->gObjs_head->id   = 0;
+	game->gObjs_head->prev   = NULL;
+	game->gObjs_head->id     = 0;
+	game->gObjs_head->type   = TYPE_HEAD;
 }
 
 void gameDraw(Game* game) {
