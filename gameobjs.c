@@ -64,11 +64,17 @@ GameObject* makeGameObject(Game* game,
 	setGameError(game, SDL_ERR); // if function returns on any of these then sdl err
 
 	SDL_Surface* sfc = IMG_Load(image);
-	if (!sfc) return NULL;
+	if (!sfc) {
+		free(go);
+		return NULL;
+	}
 
 	go->tex = SDL_CreateTextureFromSurface(game->renderer, sfc);
 	SDL_FreeSurface(sfc);
-	if (!go->tex) return NULL;
+	if (!go->tex) {
+		free(go);
+		return NULL;
+	}
 
 	SDL_QueryTexture(go->tex, NULL, NULL, &go->rect.w, &go->rect.h);
 

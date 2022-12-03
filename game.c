@@ -41,12 +41,12 @@ int main(void) {
 	GameObject* main_tb; // main textbox
 
 	if (!(demon_girl = makeAndAdd(
-					&game, 0, 0, &uwuGirlInitialize, &uwuGirlUpdate, TYPE_SPRITE, NULL))) {
+					&game, 0, 0, &uwuGirlInitialize, &uwuGirlUpdate, TYPE_SPRITE, "resources/demonsheet.png"))) {
 		CHECK_ERR(&game);
 	}
 
 	if (!(main_tb = makeAndAdd(
-					&game, (demon_girl->rect.x + demon_girl->rect.w), ((WINH-100)/2),
+					&game, (demon_girl->rect.x + demon_girl->partrect.w), ((WINH-100)/2),
 					&textBoxInitialize, &textBoxUpdate, TYPE_TEXTBOX, NULL))) {
 		CHECK_ERR(&game);
 	}

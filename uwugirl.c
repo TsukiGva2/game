@@ -18,8 +18,24 @@ void uwuGirlInitialize(void* vp_go, void* vp_game) {
 	sprite->showw = 256; // img is 256x256
 	sprite->showx = 0;
 
+	go->partrect.w = sprite->showw;
+	go->partrect.x = sprite->showx;
+	go->partrect.h = sprite->showw; // assume sprite is a square
+	go->partrect.y = 0;
+
+	go->rect.w = sprite->showw;
+
 	int vmiddle = ((WINH-(go->rect.h))/2);
 	go->initialy = vmiddle;
+}
+
+void uwuGirlSetSprite(void* vp_go, int index) {
+	GameObject* go = (GameObject*)vp_go;
+	SpriteSheet* sprite = (SpriteSheet*)go->extension;
+
+	int i = index % 8;
+
+
 }
 
 void uwuGirlUpdate(void* vp_go, void* vp_game) {
