@@ -35,13 +35,21 @@ void uwuGirlSetSprite(void* vp_go, int index) {
 
 	int i = index % 8;
 
+	sprite->showw = 256;
+	sprite->showx = i*256;
 
+	go->partrect.w = sprite->showw;
+	go->partrect.x = sprite->showx;
 }
 
 void uwuGirlUpdate(void* vp_go, void* vp_game) {
 	GameObject* go = (GameObject*)vp_go;	
 
+	static double x = 1;
+
 	double ypos = go->initialy + sin((double)SDL_GetTicks() * 0.005) * 10;
 	go->rect.y = (int)ypos;
+
+	uwuGirlSetSprite(go, (int)x);
 }
 
