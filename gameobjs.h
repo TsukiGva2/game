@@ -19,5 +19,6 @@ GameObject* freeGameObject(GameObject* go);
 void freeGameObjects(GameObject* go);
 void drawGameObjects(GameObject* go, Game* game);
 void updateGameObjects(GameObject* go, Game* game);
+void gameObjectsOnMouseEvent(GameObject* go, Game* game);
 
 #endif

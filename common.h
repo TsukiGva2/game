@@ -48,6 +48,7 @@ typedef struct GameObject {
 	ObjType type;
 	GameFn update;
 	GameFn cleanup;
+	GameFn onMouse;
 	void* extension;
 	struct GameObject* next;
 	struct GameObject* prev;
@@ -68,6 +69,7 @@ typedef struct {
 	GameError err;
 	SDL_Event event;
 	int close_game;
+	bool mouseheld;
 } Game;
 
 #endif

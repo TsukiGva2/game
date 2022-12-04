@@ -56,6 +56,8 @@ int main(void) {
 	textBoxSetText(main_tb, &game, "hello! i am satan.");
 	CHECK_ERR(&game);
 
+	uwuGirlAttachTextBox(demon_girl, main_tb);
+
 	GameObject* button_tb;
 	GameObject* button;
 	if (!(button_tb = makeAndAdd(
@@ -71,9 +73,12 @@ int main(void) {
 	textBoxSetText(button_tb, &game, "button");
 	buttonAttachTextBox(button, button_tb);
 
+	uwuGirlAttachButton(demon_girl, button);
+
 	game.close_game = 0;
 	while (!game.close_game) {
 		gameUpdate(&game);
+		CHECK_ERR(&game);
 	}
 
 	gameCleanup(&game);

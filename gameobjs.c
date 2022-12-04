@@ -54,9 +54,10 @@ GameObject* makeGameObject(Game* game,
 		return NULL;
 	}
 
-	go->extension = NULL;
-	go->cleanup = NULL;
-	go->tex = NULL;
+	go->extension  = NULL;
+	go->cleanup    = NULL;
+	go->onMouse    = NULL;
+	go->tex        = NULL;
 	go->partrect.w = INT_MAX;
 
 	if (!image) goto skipimg;
@@ -118,6 +119,20 @@ void drawGameObjects(GameObject* go, Game* game) {
 	drawGameObjects(go->next, game);
 }
 
+void gameObjectsOnMouseEvent(GameObject* go, Game* game) {
+	if (!go) return;
+
+	if (!(go->onMouse) || go->type == TYPE_HEAD) {
+		gameObjectsOnMouseEvent(go->next, game);
+		return;
+	}
+	
+	go->onMouse(go, game);
+	if (getGameError(game)) return;
+
+	gameObjectsOnMouseEvent(go->next, game);
+}
+
 void updateGameObjects(GameObject* go, Game* game) {
 	if (!go) return;
 
@@ -127,6 +142,7 @@ void updateGameObjects(GameObject* go, Game* game) {
 	}
 
 	go->update(go, game);
+	if (getGameError(game)) return;
 
 	updateGameObjects(go->next, game);
 }

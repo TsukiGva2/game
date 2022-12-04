@@ -86,6 +86,7 @@ void gameDraw(Game* game) {
 
 void gameUpdate(Game* game) {
 	updateGameObjects(game->gObjs_head, game);
+	if (getGameError(game)) return;
 
 	while (SDL_PollEvent( &(game->event) )) {
 		if (game->event.type == SDL_QUIT) {
@@ -101,6 +102,14 @@ void gameUpdate(Game* game) {
 				default:
 					break;
 			}
+		}
+
+		if (game->event.type == SDL_MOUSEBUTTONDOWN || game->event.type == SDL_MOUSEBUTTONUP) {
+			if (game->event.button.button == SDL_BUTTON_LEFT) {
+				game->mouseheld = !game->mouseheld;
+			}
+
+			gameObjectsOnMouseEvent(game->gObjs_head, game);
 		}
 	}
 
