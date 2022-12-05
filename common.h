@@ -51,6 +51,7 @@ typedef struct GameObject {
 	GameFn update;
 	GameFn cleanup;
 	GameFn onMouse;
+	GameFn draw;
 	void* extension;
 	struct GameObject* next;
 	struct GameObject* prev;

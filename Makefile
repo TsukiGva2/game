@@ -4,11 +4,13 @@
 CC := clang
 
 # set the compiler flags
+#CFLAGS := `sdl2-config --cflags` -O2 --std=c99 -Wall
 CFLAGS := `sdl2-config --cflags` -ggdb3 -O0 --std=c99 -Wall
+
 LDFLAGS := `sdl2-config --libs` -lSDL2_image -lSDL2_ttf -lm
 
 # add source files here
-SRCS := game.c gameobjs.c game_state.c uwugirl.c textbox.c debug.c button.c game_mgr.c
+SRCS := game.c gameobjs.c game_state.c uwugirl.c textbox.c debug.c button.c game_mgr.c hearts.c
 
 # generate names of object files
 OBJS := $(SRCS:.c=.o)

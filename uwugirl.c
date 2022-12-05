@@ -31,7 +31,7 @@ void uwuGirlInitialize(void* vp_go, void* vp_game) {
 
 	go->extension = (void*)self;
 
-	sprite.showw = 256; // img is 256x256
+	sprite.showw = 256; // img is 256x256 (square)
 	sprite.showx = 0;
 
 	self->textbox = NULL;
@@ -73,6 +73,12 @@ void uwuGirlSetSprite(void* vp_go, int index) {
 
 	go->partrect.w = self->sprite.showw;
 	go->partrect.x = self->sprite.showx;
+
+	if (i == GIRL_BACK) { // XXX because girl_back is not centered. stupid fix
+		go->rect.x = go->initialx + 30; // 30 has been a generally good number for this stuff
+	} else {
+		go->rect.x = go->initialx;
+	}
 }
 
 void uwuGirlUpdate(void* vp_go, void* vp_game) {

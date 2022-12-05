@@ -1,11 +1,13 @@
 #include "common.h"
+
 #include "gameobjs.h"
 #include "game_state.h"
+#include "game_mgr.h"
 
 #include "textbox.h"
 #include "uwugirl.h"
 #include "button.h"
-#include "game_mgr.h"
+#include "hearts.h"
 
 #include <SDL2/SDL_ttf.h>
 
@@ -76,14 +78,20 @@ int main(void) {
 	GameObject* speeddecbutton;
 	GameObject* speedincbutton_text;
 	GameObject* speeddecbutton_text;
+	
+	GameObject* info_text;
+	MAKE_OBJ(info_text, 10, 10, textBoxInitialize, textBoxUpdate, TYPE_TEXTBOX, NULL);
+	
+	textBoxSetText(info_text, &game, "TEXT SPEED:");
+	CHECK_ERR(&game);
 
 	MAKE_OBJ(gamemgr, 0, 0, gameMgrInitialize, gameMgrUpdate, TYPE_MANAGER, NULL);
 
 	// button 1
 	MAKE_OBJ(speedincbutton, 0, 0, buttonInitialize, buttonUpdate, TYPE_BUTTON, NULL);
-	MAKE_OBJ(speedincbutton_text, 0, 0, textBoxInitialize, textBoxUpdate, TYPE_TEXTBOX, NULL);
+	MAKE_OBJ(speedincbutton_text, 45, 30, textBoxInitialize, textBoxUpdate, TYPE_TEXTBOX, NULL);
 
-	textBoxSetText(speedincbutton_text, &game, "+");
+	textBoxSetText(speedincbutton_text, &game, ">");
 	CHECK_ERR(&game);
 
 	buttonAttachTextBox(speedincbutton, speedincbutton_text);
@@ -91,14 +99,17 @@ int main(void) {
 
 	// button 2
 	MAKE_OBJ(speeddecbutton, 0, 0, buttonInitialize, buttonUpdate, TYPE_BUTTON, NULL);
-	MAKE_OBJ(speeddecbutton_text, 0, 30, textBoxInitialize, textBoxUpdate, TYPE_TEXTBOX, NULL);
+	MAKE_OBJ(speeddecbutton_text, 20, 30, textBoxInitialize, textBoxUpdate, TYPE_TEXTBOX, NULL);
 
-	textBoxSetText(speeddecbutton_text, &game, "-");
+	textBoxSetText(speeddecbutton_text, &game, "<");
 	CHECK_ERR(&game);
 
 	buttonAttachTextBox(speeddecbutton, speeddecbutton_text);
 	gameMgrAttachButtonToProperty( &gameMgrGetManager(gamemgr)->textspeed_dec,  speeddecbutton);
 	// end game manager
+
+	GameObject* hearts;
+	MAKE_OBJ(hearts, 0, 0, heartsInitialize, heartsUpdate, TYPE_SPRITE, NULL);
 
 	game.close_game = 0;
 	while (!game.close_game) {
@@ -108,7 +119,8 @@ int main(void) {
 		CHECK_ERR(&game);
 
 		Uint64 elapsed = SDL_GetTicks64() - starttime;
-		SDL_Delay((1000-elapsed)/60);
+
+		if (elapsed < 1000) SDL_Delay((1000-elapsed)/60);
 	}
 
 	gameCleanup(&game);

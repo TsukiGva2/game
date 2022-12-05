@@ -57,6 +57,7 @@ GameObject* makeGameObject(Game* game,
 	go->extension  = NULL;
 	go->cleanup    = NULL;
 	go->onMouse    = NULL;
+	go->draw       = NULL;
 	go->tex        = NULL;
 	go->partrect.w = INT_MAX;
 
@@ -84,6 +85,8 @@ GameObject* makeGameObject(Game* game,
 skipimg:
 	go->rect.x = x;
 	go->rect.y = y;
+	go->initialx = x;
+	go->initialy = y;
 
 	static ID_UINT id = 1;
 	go->id = id++;
@@ -99,6 +102,16 @@ skipimg:
 	return go;
 }
 
+void drawGameObject(GameObject* go, Game* game) {
+	if (go->tex) {
+		if (go->partrect.w == INT_MAX) { // entire img
+			SDL_RenderCopy(game->renderer, go->tex, NULL, &(go->rect));
+		} else {
+			SDL_RenderCopy(game->renderer, go->tex, &(go->partrect), &(go->rect));
+		}
+	}
+}
+
 void drawGameObjects(GameObject* go, Game* game) {
 	if (!go) return;
 
@@ -107,12 +120,10 @@ void drawGameObjects(GameObject* go, Game* game) {
 		return;
 	}
 
-	if (go->tex) {
-		if (go->partrect.w == INT_MAX) { // entire img
-			SDL_RenderCopy(game->renderer, go->tex, NULL, &(go->rect));
-		} else {
-			SDL_RenderCopy(game->renderer, go->tex, &(go->partrect), &(go->rect));
-		}
+	if (!go->draw) {
+		drawGameObject(go, game);
+	} else {
+		go->draw(go, game);
 	}
 	//if (go->type == TYPE_TEXTBOX) SDL_RenderDrawRect(game->renderer, &(go->rect));
 
