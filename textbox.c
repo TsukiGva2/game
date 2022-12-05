@@ -1,10 +1,10 @@
 #include "textbox.h"
 
 typedef struct TextAnimator {
-	double part;
 	int img_width;
 	TTF_Font* fn;
 	SDL_Color color;
+	Uint64 timer;
 	const char* str;
 } TextAnimator;
 
@@ -44,16 +44,17 @@ void textBoxInitialize(void* vp_go, void* vp_game) {
 }
 
 void textBoxUpdate(void* vp_go, void* vp_game) {
+	Game* game = (Game*)vp_game;
 	GameObject* go = (GameObject*)vp_go;
 	TextAnimator* textanim = (TextAnimator*)go->extension;
 
-	if ((int)textanim->part >= textanim->img_width) {
+	if (go->partrect.w >= textanim->img_width) {
+		go->partrect.w = INT_MAX; // entire image
 		return;
 	}
 
-	go->partrect.w = textanim->part;
-
-	textanim->part += 2;
+	go->partrect.w += game->options.textspeed;
+	go->rect.w = go->partrect.w;
 }
 
 void textBoxSetSize(void* vp_go, int w, int h) {
@@ -91,8 +92,6 @@ void textBoxSetText(void* vp_go, void* vp_game, const char* str) {
 	Game* game = (Game*)vp_game;
 	TextAnimator* textanim = (TextAnimator*)go->extension;
 
-	textanim->part = 10;
-
 	textanim->str = str;
 
 	setGameError(game, SDL_ERR);
@@ -107,6 +106,8 @@ void textBoxSetText(void* vp_go, void* vp_game, const char* str) {
 
 	SDL_QueryTexture(go->tex, NULL, NULL, &go->rect.w, &go->rect.h);
 	textanim->img_width = go->rect.w;
+
+	go->partrect.w = 0;
 	go->partrect.h = go->rect.h;
 
 	go->partrect.x = 0;

@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
 //#include <math.h>
 
 #include <SDL2/SDL.h>
@@ -35,7 +36,8 @@ typedef enum {
 	TYPE_HEAD,
 	TYPE_BUTTON,
 	TYPE_SPRITE,
-	TYPE_TEXTBOX
+	TYPE_TEXTBOX,
+	TYPE_MANAGER
 } ObjType;
 
 typedef struct GameObject {
@@ -63,6 +65,10 @@ typedef enum {
 } GameError;
 
 typedef struct {
+	uint8_t textspeed;
+} GameProperties;
+
+typedef struct {
 	SDL_Window* win;
 	SDL_Renderer* renderer;
 	GameObject* gObjs_head;
@@ -70,6 +76,7 @@ typedef struct {
 	SDL_Event event;
 	int close_game;
 	bool mouseheld;
+	GameProperties options;
 } Game;
 
 #endif

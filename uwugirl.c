@@ -13,6 +13,17 @@ typedef struct DemonGirl {
 	GameObject* button;
 } DemonGirl;
 
+enum Faces {
+	GIRL_FCKOFF,
+	GIRL_YE,
+	GIRL_LAUGHING,
+	GIRL_DED,
+	GIRL_CUTE,
+	GIRL_HMM,
+	GIRL_BLUSH,
+	GIRL_BACK
+};
+
 void uwuGirlInitialize(void* vp_go, void* vp_game) {
 	GameObject* go = (GameObject*)vp_go;
 	DemonGirl* self = (DemonGirl*)malloc(sizeof(DemonGirl)); // TODO: handle this pls
@@ -77,7 +88,7 @@ void uwuGirlUpdate(void* vp_go, void* vp_game) {
 			textBoxSetText(self->textbox, game, "you clicked a button!");
 		}
 
-		uwuGirlSetSprite(go, SDL_GetTicks());
+		uwuGirlSetSprite(go, GIRL_YE);
 	}
 }
 

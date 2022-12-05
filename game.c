@@ -5,8 +5,14 @@
 #include "textbox.h"
 #include "uwugirl.h"
 #include "button.h"
+#include "game_mgr.h"
 
 #include <SDL2/SDL_ttf.h>
+
+#define MAKE_OBJ(objname, x, y, initfn, updatefn, ty, res) do{if (!(objname = makeAndAdd(\
+					&game, x, y, &initfn, &updatefn, ty, res))) {\
+		CHECK_ERR(&game);\
+	}}while(0)
 
 int main(void) {
 	Game game;
@@ -39,46 +45,70 @@ int main(void) {
 
 	GameObject* demon_girl;
 	GameObject* main_tb; // main textbox
-
-	if (!(demon_girl = makeAndAdd(
-					&game, 0, 0, &uwuGirlInitialize, &uwuGirlUpdate, TYPE_SPRITE, "resources/demonsheet.png"))) {
-		CHECK_ERR(&game);
-	}
-
-	if (!(main_tb = makeAndAdd(
-					&game, (demon_girl->rect.x + demon_girl->partrect.w), ((WINH-100)/2),
-					&textBoxInitialize, &textBoxUpdate, TYPE_TEXTBOX, NULL))) {
-		CHECK_ERR(&game);
-	}
+	GameObject* button_tb;
+	GameObject* button;
+	
+	MAKE_OBJ(demon_girl, 0, 0, uwuGirlInitialize, uwuGirlUpdate, TYPE_SPRITE, "resources/demonsheet.png");
+	MAKE_OBJ(main_tb,
+			(demon_girl->rect.x + demon_girl->partrect.w), ((WINH-100)/2),
+			textBoxInitialize, textBoxUpdate, TYPE_TEXTBOX, NULL);
 
 	textBoxSetSize(main_tb, 100, 100);
-
 	textBoxSetText(main_tb, &game, "hello! i am satan.");
 	CHECK_ERR(&game);
 
-	uwuGirlAttachTextBox(demon_girl, main_tb);
+	MAKE_OBJ(button, 0, 0, buttonInitialize, buttonUpdate, TYPE_BUTTON, NULL);
+	MAKE_OBJ(button_tb,
+			(demon_girl->rect.x + demon_girl->partrect.w), ((WINH-100)/2)+30,
+			textBoxInitialize, textBoxUpdate, TYPE_TEXTBOX, NULL);
 
-	GameObject* button_tb;
-	GameObject* button;
-	if (!(button_tb = makeAndAdd(
-					&game, (demon_girl->rect.x + demon_girl->partrect.w), (((WINH-100)/2)+30),
-					&textBoxInitialize, &textBoxUpdate, TYPE_TEXTBOX, NULL))) {
-		CHECK_ERR(&game);
-	}
-	if (!(button = makeAndAdd(
-					&game, 0, 0,
-					&buttonInitialize, &buttonUpdate, TYPE_BUTTON, NULL))) {
-		CHECK_ERR(&game);
-	}
 	textBoxSetText(button_tb, &game, "button");
+	CHECK_ERR(&game);
+
 	buttonAttachTextBox(button, button_tb);
 
+	uwuGirlAttachTextBox(demon_girl, main_tb);
 	uwuGirlAttachButton(demon_girl, button);
+
+	// game manager
+	GameObject* gamemgr;
+	GameObject* speedincbutton;
+	GameObject* speeddecbutton;
+	GameObject* speedincbutton_text;
+	GameObject* speeddecbutton_text;
+
+	MAKE_OBJ(gamemgr, 0, 0, gameMgrInitialize, gameMgrUpdate, TYPE_MANAGER, NULL);
+
+	// button 1
+	MAKE_OBJ(speedincbutton, 0, 0, buttonInitialize, buttonUpdate, TYPE_BUTTON, NULL);
+	MAKE_OBJ(speedincbutton_text, 0, 0, textBoxInitialize, textBoxUpdate, TYPE_TEXTBOX, NULL);
+
+	textBoxSetText(speedincbutton_text, &game, "+");
+	CHECK_ERR(&game);
+
+	buttonAttachTextBox(speedincbutton, speedincbutton_text);
+	gameMgrAttachButtonToProperty( &gameMgrGetManager(gamemgr)->textspeed_inc,  speedincbutton);
+
+	// button 2
+	MAKE_OBJ(speeddecbutton, 0, 0, buttonInitialize, buttonUpdate, TYPE_BUTTON, NULL);
+	MAKE_OBJ(speeddecbutton_text, 0, 30, textBoxInitialize, textBoxUpdate, TYPE_TEXTBOX, NULL);
+
+	textBoxSetText(speeddecbutton_text, &game, "-");
+	CHECK_ERR(&game);
+
+	buttonAttachTextBox(speeddecbutton, speeddecbutton_text);
+	gameMgrAttachButtonToProperty( &gameMgrGetManager(gamemgr)->textspeed_dec,  speeddecbutton);
+	// end game manager
 
 	game.close_game = 0;
 	while (!game.close_game) {
+		Uint64 starttime = SDL_GetTicks64();
+
 		gameUpdate(&game);
 		CHECK_ERR(&game);
+
+		Uint64 elapsed = SDL_GetTicks64() - starttime;
+		SDL_Delay((1000-elapsed)/60);
 	}
 
 	gameCleanup(&game);

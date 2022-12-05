@@ -36,6 +36,8 @@ bool buttonIsClicked(void* vp_go) {
 	/*
 	 * THIS FUNCTION ALSO UNSETS STATE_CLICKED
 	 */
+	if (!vp_go) return false;
+
 	GameObject* go = (GameObject*)vp_go;
 	Button* button = (Button*)go->extension;
 

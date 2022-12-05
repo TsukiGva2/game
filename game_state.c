@@ -73,6 +73,8 @@ void initializeGame(Game* game) {
 	game->gObjs_head->prev   = NULL;
 	game->gObjs_head->id     = 0;
 	game->gObjs_head->type   = TYPE_HEAD;
+
+	game->options.textspeed = 2;
 }
 
 void gameDraw(Game* game) {
@@ -114,8 +116,6 @@ void gameUpdate(Game* game) {
 	}
 
 	gameDraw(game);
-
-	SDL_Delay(1000/60);
 }
 
 

@@ -16,6 +16,7 @@ typedef struct Button {
 	ButtonState state;
 	GameObject* textbox;
 	SDL_Rect rect;
+	GameFn onClick;
 } Button;
 
 void buttonUpdate(void* vp_go, void* vp_game);
