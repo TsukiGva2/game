@@ -17,7 +17,6 @@ void heartsSetLife(GameObject* go, uint8_t life) {
 }
 
 void heartsCleanup(void* vp_go, void* vp_game) {
-	Game* game = (Game*)vp_game;
 	GameObject* go = (GameObject*)vp_go;
 	HeartTextures ht = ((Hearts*)go->extension)->ht;
 
@@ -84,7 +83,10 @@ void heartsDraw(void* vp_go, void* vp_game) {
 
 	int initialx = go->rect.x;
 
-	uint8_t redhearts = hearts->life % HEARTS+1;
+	uint8_t redhearts = hearts->life;
+
+	Uint8 colors = (Uint8)(fabs(sin((double)SDL_GetTicks()*0.001))*255);
+	SDL_SetTextureColorMod(ht.redheart, 255, colors, colors);
 
 	for (uint8_t i = 0; i < HEARTS; i++) {
 		go->rect.x = DRAW_START + (i * HEART_SIZE);

@@ -105,7 +105,7 @@ void textBoxSetText(void* vp_go, void* vp_game, const char* str) {
 	setGameError(game, ALLGOOD);
 
 	SDL_QueryTexture(go->tex, NULL, NULL, &go->rect.w, &go->rect.h);
-	textanim->img_width = go->rect.w;
+	textanim->img_width = go->rect.w-1;
 
 	go->partrect.w = 0;
 	go->partrect.h = go->rect.h;

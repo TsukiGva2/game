@@ -1,6 +1,8 @@
 #ifndef __HEARTS_H__GAME__
 #define __HEARTS_H__GAME__
 
+#include <math.h>
+
 #include "common.h"
 #include "game_state.h"
 

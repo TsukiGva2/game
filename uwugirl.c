@@ -88,13 +88,5 @@ void uwuGirlUpdate(void* vp_go, void* vp_game) {
 
 	double ypos = go->initialy + sin((double)SDL_GetTicks() * 0.005) * 10;
 	go->rect.y = (int)ypos;
-
-	if (buttonIsClicked(self->button)) { // this function also unsets STATE_CLICKED
-		if (self->textbox) {
-			textBoxSetText(self->textbox, game, "you clicked a button!");
-		}
-
-		uwuGirlSetSprite(go, GIRL_YE);
-	}
 }
 

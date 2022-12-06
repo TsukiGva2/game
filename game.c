@@ -16,6 +16,15 @@
 		CHECK_ERR(&game);\
 	}}while(0)
 
+#define MAKE_BUTTON(bt, x, y, text) do{\
+	GameObject* bt##_text;\
+	MAKE_OBJ(bt, 0, 0, buttonInitialize, buttonUpdate, TYPE_BUTTON, NULL);\
+	MAKE_OBJ(bt##_text, x, y, textBoxInitialize, textBoxUpdate, TYPE_TEXTBOX, NULL);\
+	textBoxSetText(bt##_text, &game, text);\
+	CHECK_ERR(&game);\
+	buttonAttachTextBox(bt, bt##_text);\
+	}while(0)
+
 int main(void) {
 	Game game;
 	Uint32 render_flags;
@@ -47,8 +56,6 @@ int main(void) {
 
 	GameObject* demon_girl;
 	GameObject* main_tb; // main textbox
-	GameObject* button_tb;
-	GameObject* button;
 	
 	MAKE_OBJ(demon_girl, 0, 0, uwuGirlInitialize, uwuGirlUpdate, TYPE_SPRITE, "resources/demonsheet.png");
 	MAKE_OBJ(main_tb,
@@ -59,25 +66,30 @@ int main(void) {
 	textBoxSetText(main_tb, &game, "hello! i am satan.");
 	CHECK_ERR(&game);
 
-	MAKE_OBJ(button, 0, 0, buttonInitialize, buttonUpdate, TYPE_BUTTON, NULL);
-	MAKE_OBJ(button_tb,
-			(demon_girl->rect.x + demon_girl->partrect.w), ((WINH-100)/2)+30,
-			textBoxInitialize, textBoxUpdate, TYPE_TEXTBOX, NULL);
+	int demon_girl_right = (demon_girl->rect.x + demon_girl->partrect.w);
+	int vmiddle = ((WINH-100)/2);
 
-	textBoxSetText(button_tb, &game, "button");
-	CHECK_ERR(&game);
+	GameObject* up;
+	GameObject* down;
+	GameObject* left;
+	GameObject* right;
+	/* draw:
+	 *    ^
+	 *   < >
+	 *    v
+	 */
 
-	buttonAttachTextBox(button, button_tb);
+	MAKE_BUTTON(up, demon_girl_right+50, vmiddle+30, "^");
+	MAKE_BUTTON(down, demon_girl_right+30, vmiddle+50, "<");
+	MAKE_BUTTON(left, demon_girl_right+70, vmiddle+50, ">");
+	MAKE_BUTTON(right, demon_girl_right+50, vmiddle+70, "v");
 
 	uwuGirlAttachTextBox(demon_girl, main_tb);
-	uwuGirlAttachButton(demon_girl, button);
 
 	// game manager
 	GameObject* gamemgr;
 	GameObject* speedincbutton;
 	GameObject* speeddecbutton;
-	GameObject* speedincbutton_text;
-	GameObject* speeddecbutton_text;
 	
 	GameObject* info_text;
 	MAKE_OBJ(info_text, 10, 10, textBoxInitialize, textBoxUpdate, TYPE_TEXTBOX, NULL);
@@ -88,23 +100,11 @@ int main(void) {
 	MAKE_OBJ(gamemgr, 0, 0, gameMgrInitialize, gameMgrUpdate, TYPE_MANAGER, NULL);
 
 	// button 1
-	MAKE_OBJ(speedincbutton, 0, 0, buttonInitialize, buttonUpdate, TYPE_BUTTON, NULL);
-	MAKE_OBJ(speedincbutton_text, 45, 30, textBoxInitialize, textBoxUpdate, TYPE_TEXTBOX, NULL);
-
-	textBoxSetText(speedincbutton_text, &game, ">");
-	CHECK_ERR(&game);
-
-	buttonAttachTextBox(speedincbutton, speedincbutton_text);
+  MAKE_BUTTON(speedincbutton, 45, 30, ">");
 	gameMgrAttachButtonToProperty( &gameMgrGetManager(gamemgr)->textspeed_inc,  speedincbutton);
 
 	// button 2
-	MAKE_OBJ(speeddecbutton, 0, 0, buttonInitialize, buttonUpdate, TYPE_BUTTON, NULL);
-	MAKE_OBJ(speeddecbutton_text, 20, 30, textBoxInitialize, textBoxUpdate, TYPE_TEXTBOX, NULL);
-
-	textBoxSetText(speeddecbutton_text, &game, "<");
-	CHECK_ERR(&game);
-
-	buttonAttachTextBox(speeddecbutton, speeddecbutton_text);
+  MAKE_BUTTON(speeddecbutton, 20, 30, "<");
 	gameMgrAttachButtonToProperty( &gameMgrGetManager(gamemgr)->textspeed_dec,  speeddecbutton);
 	// end game manager
 
