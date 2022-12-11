@@ -27,6 +27,12 @@ enum Faces {
 void uwuGirlInitialize(void* vp_go, void* vp_game) {
 	GameObject* go = (GameObject*)vp_go;
 	DemonGirl* self = (DemonGirl*)malloc(sizeof(DemonGirl)); // TODO: handle this pls
+	
+	if (!self) {
+		setGameError((Game*)vp_game, ALLOC_ERR);
+		return;
+	}
+
 	SpriteSheet sprite = self->sprite;
 
 	go->extension = (void*)self;
