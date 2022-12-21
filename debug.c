@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include "debug.h"
 
 void* my_malloc(size_t size, const char* file, int line, const char* func) {
 	void* p = malloc(size);

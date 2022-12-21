@@ -1,29 +1,4 @@
-#include "common.h"
-
-#include "gameobjs.h"
-#include "game_state.h"
-#include "game_mgr.h"
-
-#include "textbox.h"
-#include "uwugirl.h"
-#include "button.h"
-#include "hearts.h"
-
-#include <SDL2/SDL_ttf.h>
-
-#define MAKE_OBJ(objname, x, y, initfn, updatefn, ty, res) do{if (!(objname = makeAndAdd(\
-					&game, x, y, &initfn, &updatefn, ty, res))) {\
-		CHECK_ERR(&game);\
-	}}while(0)
-
-#define MAKE_BUTTON(bt, x, y, text) do{\
-	GameObject* bt##_text;\
-	MAKE_OBJ(bt, 0, 0, buttonInitialize, buttonUpdate, TYPE_BUTTON, NULL);\
-	MAKE_OBJ(bt##_text, x, y, textBoxInitialize, textBoxUpdate, TYPE_TEXTBOX, NULL);\
-	textBoxSetText(bt##_text, &game, text);\
-	CHECK_ERR(&game);\
-	buttonAttachTextBox(bt, bt##_text);\
-	}while(0)
+#include "game.h"
 
 int main(void) {
 	Game game;
@@ -66,25 +41,39 @@ int main(void) {
 	textBoxSetText(main_tb, &game, "hello! i am satan.");
 	CHECK_ERR(&game);
 
+	uwuGirlAttachTextBox(demon_girl, main_tb);
+
 	int demon_girl_right = (demon_girl->rect.x + demon_girl->partrect.w);
 	int vmiddle = ((WINH-100)/2);
 
+	// roguelike
 	GameObject* up;
 	GameObject* down;
 	GameObject* left;
 	GameObject* right;
+	GameObject* attack;
 	/* draw:
 	 *    ^
-	 *   < >
+	 *   < >   ATTACK
 	 *    v
 	 */
 
 	MAKE_BUTTON(up, demon_girl_right+50, vmiddle+30, "^");
-	MAKE_BUTTON(down, demon_girl_right+30, vmiddle+50, "<");
-	MAKE_BUTTON(left, demon_girl_right+70, vmiddle+50, ">");
-	MAKE_BUTTON(right, demon_girl_right+50, vmiddle+70, "v");
+	MAKE_BUTTON(down, demon_girl_right+50, vmiddle+70, "v");
+	MAKE_BUTTON(left, demon_girl_right+30, vmiddle+50, "<");
+	MAKE_BUTTON(right, demon_girl_right+70, vmiddle+50, ">");
+	MAKE_BUTTON(attack, demon_girl_right+100, vmiddle+50, "ATTACK");
 
-	uwuGirlAttachTextBox(demon_girl, main_tb);
+	GameObject* roguelike;
+	MAKE_OBJ(roguelike,
+		demon_girl_right+100, vmiddle+30,
+		roguelikeInitialize, roguelikeUpdate,
+		TYPE_ROGUELIKE, "resources/knight.png");
+
+	roguelikeAttachButtons(roguelike, up, down, left, right, attack);
+	roguelikeAttachMaster(roguelike, demon_girl, uwuGirlGetRoguelikeCallback(demon_girl));
+	// end roguelike
+
 
 	// game manager
 	GameObject* gamemgr;
@@ -100,11 +89,11 @@ int main(void) {
 	MAKE_OBJ(gamemgr, 0, 0, gameMgrInitialize, gameMgrUpdate, TYPE_MANAGER, NULL);
 
 	// button 1
-  MAKE_BUTTON(speedincbutton, 45, 30, ">");
+	MAKE_BUTTON(speedincbutton, 45, 30, ">");
 	gameMgrAttachButtonToProperty( &gameMgrGetManager(gamemgr)->textspeed_inc,  speedincbutton);
 
 	// button 2
-  MAKE_BUTTON(speeddecbutton, 20, 30, "<");
+	MAKE_BUTTON(speeddecbutton, 20, 30, "<");
 	gameMgrAttachButtonToProperty( &gameMgrGetManager(gamemgr)->textspeed_dec,  speeddecbutton);
 	// end game manager
 
@@ -124,5 +113,6 @@ int main(void) {
 	}
 
 	gameCleanup(&game);
+	gameDestroy(&game);
 }
 

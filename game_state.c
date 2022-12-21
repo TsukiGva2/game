@@ -52,12 +52,14 @@ void delGameObject(Game* game, int id) {
 	prev->next = next;
 }
 
-void gameCleanup(Game* game) {
-	freeGameObjects(game->gObjs_head);
-
+void gameDestroy(Game* game) {
 	SDL_DestroyRenderer(game->renderer);
 	SDL_DestroyWindow(game->win);
 	SDL_Quit();
+}
+
+void gameCleanup(Game* game) {
+	freeGameObjects(game->gObjs_head);
 }
 
 void initializeGame(Game* game) {

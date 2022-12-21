@@ -11,6 +11,7 @@ typedef struct DemonGirl {
 	SpriteSheet sprite;
 	GameObject* textbox;
 	GameObject* button;
+	RoguelikeCallback on_roguelike_event;
 } DemonGirl;
 
 enum Faces {
@@ -23,6 +24,14 @@ enum Faces {
 	GIRL_BLUSH,
 	GIRL_BACK
 };
+
+void uwuMasterCallback(GameObject* master, GameObject* roguelike, RoguelikeEvent e) {
+	uwuGirlSetSprite(master, (int)e);
+}
+
+RoguelikeCallback uwuGirlGetRoguelikeCallback(GameObject* go) {
+	return ((DemonGirl*)go->extension)->on_roguelike_event;
+}
 
 void uwuGirlInitialize(void* vp_go, void* vp_game) {
 	GameObject* go = (GameObject*)vp_go;
@@ -42,6 +51,8 @@ void uwuGirlInitialize(void* vp_go, void* vp_game) {
 
 	self->textbox = NULL;
 	self->button  = NULL;
+
+	self->on_roguelike_event = &uwuMasterCallback;
 
 	go->partrect.w = sprite.showw;
 	go->partrect.x = sprite.showx;

@@ -23,11 +23,10 @@
 
 #define GAMENAME "cool game"
 
-//debugging stuff
+//dbg
+#include "debug.h"
 #define malloc(x) my_malloc(x, __FILE__, __LINE__, __FUNCTION__)
 #define free(x) my_free(x, __FILE__, __LINE__, __FUNCTION__)
-void* my_malloc(size_t size, const char* file, int line, const char* func);
-void* my_free(void* ptr, const char* file, int line, const char* func);
 //end
 
 typedef void (*GameFn)(void* vp_go, void* vp_game); // vp_ -> void*_
@@ -37,7 +36,8 @@ typedef enum {
 	TYPE_BUTTON,
 	TYPE_SPRITE,
 	TYPE_TEXTBOX,
-	TYPE_MANAGER
+	TYPE_MANAGER,
+	TYPE_ROGUELIKE
 } ObjType;
 
 typedef struct GameObject {

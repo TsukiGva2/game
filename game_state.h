@@ -38,6 +38,7 @@ void gameDraw(Game* game);
 void gameUpdate(Game* game);
 
 void gameCleanup(Game* game);
+void gameDestroy(Game* game);
 
 #endif
 
