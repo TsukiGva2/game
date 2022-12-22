@@ -1,19 +1,27 @@
 #include "roguelike.h"
 
 #define MAPW 10
-#define MAPH 10
+#define MAPH 5
 
 #define MOVE(dx, dy) do{\
 		r->x += dx;\
 		r->y += dy;\
+		RoguelikeEvent e = getEvent(r);\
+		if (e != EVENT_FINE) {\
+			r->x -= dx;\
+			r->y -= dy;\
+		}\
 		if (r->callback) {\
-			r->callback(r->master, go, getEvent(r));\
+			r->callback(r->master, go, e);\
 		}}while(0);
 
 typedef struct Roguelike {
 	/* map */
-	char map[MAPW][MAPH];
+	char map[MAPH][MAPW];
+	char* mapstr;
 	int x, y;
+	int dx, dy;
+	GameObject* map_textbox;
 
 	/* buttons */
 	GameObject* up;
@@ -28,9 +36,16 @@ typedef struct Roguelike {
 } Roguelike;
 
 RoguelikeEvent getEvent(Roguelike* r) {
-	if (r->map[r->y][r->x]) return EVENT_WALL;
 	if (r->x > MAPW || r->y > MAPH || r->x < 0 || r->y < 0) return EVENT_OUT_OF_BOUNDS;
+	if (r->map[r->y][r->x]) return EVENT_WALL;
 	return EVENT_FINE;
+}
+
+void roguelikeCleanup(void* vp_go, void* vp_game) {
+	GameObject* go = (GameObject*)vp_go;
+	Roguelike* r = (Roguelike*)go->extension;
+
+	free(r->mapstr); // need to manually free this
 }
 
 void roguelikeInitialize(void* vp_go, void* vp_game) {
@@ -39,12 +54,19 @@ void roguelikeInitialize(void* vp_go, void* vp_game) {
 
 	Roguelike* r = (Roguelike*)malloc(sizeof(Roguelike)); // freed automatically by gameobjs.c
 	go->extension = (void*)r;                             // setting it as the extension
+	go->cleanup = &roguelikeCleanup;
 
 	if (!r) {
 		setGameError(game, ALLOC_ERR);
 		return;
 	}
 
+	// + MAPH to account for each newline
+	r->mapstr = (char*)malloc((MAPH * MAPW) + MAPH + 1); // +1 for the '\0'
+	if (!r->mapstr) {
+		setGameError(game, ALLOC_ERR);
+		return;
+	}
 
 	srand(time(NULL));
 
@@ -87,10 +109,16 @@ void roguelikeInitialize(void* vp_go, void* vp_game) {
 		memset(r->map[i]+1, 0, xoffset);
 	}
 
-	r->x = 5;
-	r->y = 5;
+	r->x = 2;
+	r->y = 2;
 
 	r->map[r->y][r->x] = 0;
+
+	r->dx = 32;
+	r->dy = 32;
+
+	go->initialx = go->rect.x + r->x * r->dx;
+	go->initialy = go->rect.y + r->y * r->dy;
 }
 
 void roguelikeUpdate(void* vp_go, void* vp_game) {
@@ -113,6 +141,9 @@ void roguelikeUpdate(void* vp_go, void* vp_game) {
 	if (buttonIsClicked(r->attack)) {
 
 	}
+
+	go->rect.x = go->initialx + r->x*r->dx;
+	go->rect.y = go->initialy + r->y*r->dy;
 }
 
 void roguelikeAttachButtons(GameObject* go, GameObject* up,
@@ -132,5 +163,32 @@ void roguelikeAttachMaster(GameObject* go, GameObject* master, RoguelikeCallback
 
 	r->master = master;
 	r->callback = callback;
+}
+
+void roguelikeDrawMap(GameObject* go, Game* game) {
+	Roguelike* r = (Roguelike*)go->extension;
+
+	if (!r->map_textbox) return;
+
+	for (int i = 0; i < MAPH; i++) {
+		for (int j = 0; j < MAPW; j++) {
+			r->mapstr[(i*MAPW)+j] = r->map[i][j] ? '#' : ' ';
+		}
+		r->mapstr[(i*MAPW)+MAPW-2] = '#';
+		r->mapstr[(i*MAPW)+MAPW-1] = '\n';
+	}
+	r->mapstr[MAPH*MAPW-1] = '\0';
+
+	printf("%s\n", r->mapstr);
+
+	textBoxSetText(r->map_textbox, game, r->mapstr);
+}
+
+void roguelikeAttachMap(GameObject* go, GameObject* map, Game* game) {
+	Roguelike* r = (Roguelike*)go->extension;
+
+	r->map_textbox = map;
+
+	roguelikeDrawMap(go, game);
 }
 

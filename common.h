@@ -18,7 +18,7 @@
 #define MAX_OBJS 255
 #define ID_UINT Uint8
 
-#define GAMEFON "resources/PixelGameFont.ttf"
+#define GAMEFON "resources/joystix.ttf"
 #define GAMEFONSZ 24
 
 #define GAMENAME "cool game"

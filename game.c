@@ -52,6 +52,8 @@ int main(void) {
 	GameObject* left;
 	GameObject* right;
 	GameObject* attack;
+
+	GameObject* map_tb; // map textbox
 	/* draw:
 	 *    ^
 	 *   < >   ATTACK
@@ -63,15 +65,22 @@ int main(void) {
 	MAKE_BUTTON(left, demon_girl_right+30, vmiddle+50, "<");
 	MAKE_BUTTON(right, demon_girl_right+70, vmiddle+50, ">");
 	MAKE_BUTTON(attack, demon_girl_right+100, vmiddle+50, "ATTACK");
+	
+	MAKE_OBJ(map_tb,
+		demon_girl_right+100, vmiddle+100,
+		textBoxInitialize, textBoxUpdate, TYPE_TEXTBOX, NULL);
+	textBoxSetSize(map_tb, 100, 100);
 
 	GameObject* roguelike;
 	MAKE_OBJ(roguelike,
-		demon_girl_right+100, vmiddle+30,
+		demon_girl_right+100, vmiddle+100,
 		roguelikeInitialize, roguelikeUpdate,
 		TYPE_ROGUELIKE, "resources/knight.png");
 
 	roguelikeAttachButtons(roguelike, up, down, left, right, attack);
 	roguelikeAttachMaster(roguelike, demon_girl, uwuGirlGetRoguelikeCallback(demon_girl));
+	roguelikeAttachMap(roguelike, map_tb, &game);
+	CHECK_ERR(&game);
 	// end roguelike
 
 

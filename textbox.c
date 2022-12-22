@@ -71,7 +71,10 @@ void textBoxReRender(void* vp_go, void* vp_game) {
 
 	setGameError(game, SDL_ERR);
 
-	SDL_Surface* msg = TTF_RenderText_Solid(textanim->fn, textanim->str, textanim->color);
+	SDL_Surface* msg = TTF_RenderText_Blended_Wrapped(textanim->fn,
+							textanim->str,
+							textanim->color,
+							DEFAULT_WRAP);
 	if (!msg) return;
 
 	go->tex = SDL_CreateTextureFromSurface(game->renderer, msg);
@@ -96,7 +99,10 @@ void textBoxSetText(void* vp_go, void* vp_game, const char* str) {
 
 	setGameError(game, SDL_ERR);
 
-	SDL_Surface* msg = TTF_RenderText_Solid(textanim->fn, str, textanim->color);
+	SDL_Surface* msg = TTF_RenderText_Blended_Wrapped(textanim->fn,
+							textanim->str,
+							textanim->color,
+							DEFAULT_WRAP);
 	if (!msg) return;
 
 	go->tex = SDL_CreateTextureFromSurface(game->renderer, msg);

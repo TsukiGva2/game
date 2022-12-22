@@ -23,5 +23,6 @@ void roguelikeAttachButtons(GameObject* go, GameObject* up,
 			    GameObject* down, GameObject* left,
 			    GameObject* right, GameObject* attack);
 void roguelikeAttachMaster(GameObject* go, GameObject* master, RoguelikeCallback callback);
+void roguelikeAttachMap(GameObject* go, GameObject* map, Game* game);
 
 #endif

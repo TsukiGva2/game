@@ -1,6 +1,8 @@
 #ifndef __TEXTBOX_H__GAME__
 #define __TEXTBOX_H__GAME__
 
+#define DEFAULT_WRAP 800
+
 #include "common.h"
 #include "game_state.h"
 #include <SDL2/SDL_ttf.h>
